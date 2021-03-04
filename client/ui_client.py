@@ -29,9 +29,9 @@ class ChatUI(Client):
     def change_user_name(self):
         self.user_name = self.name_input.get()
         self.run(self.user_name)
-        #ui_thread = Thread(target=self.init_chat_elements)
-        #ui.start(self)
+        self.init_chat_elements()
 
+    
     def init_chat_elements(self):
         self.master.geometry("550x850")
         for item in self.current_items:
@@ -40,21 +40,27 @@ class ChatUI(Client):
         self.title.pack(side="top", pady=20)
         self.msg_text_label = tk.Label(self.master, text="some text", font=MEDIUM_FONT)
         self.msg_text_label.pack(side="top", pady=30)
-        self.send_button = tk.Button(self.master, font=MEDIUM_FONT, text="send", command=lambda: self.update_text(writer=self.user_name))
+        self.send_button = tk.Button(self.master, font=MEDIUM_FONT, text="send", command=lambda: self.send_and_update_text())
         self.send_button.pack(side="bottom", pady=50)
         self.input_box = tk.Entry(self.master, width=10, font=BIG_FONT)
         self.input_box.pack(side="bottom", pady=0 , padx=40)
-        
 
-        
-    def update_text(self, writer):
-        new_text = self.input_box.get()
-        self.input_box.delete(0, 'end')
+    def check_for_new_data(self):
+        while True:
+            data = self.client.recv(1024).decode()
+            if not data.startswith(self.trashkey):  
+                self.update_text(data)  
+
+    def send_and_update_text(self):
+        self.send_msg(self.input_box.get()) 
+        self.update_text(self_written = True) 
+
+    def update_text(self, new_text="", self_written=False):
+        if self_written:
+            new_text = self.input_box.get()
+            self.input_box.delete(0, 'end')
         if new_text != "":
-            if writer == self.user_name:
-                self.msg_text += f"\n{new_text}"
-            else:
-                self.msg_text += f"\n{writer}:{new_text}"
+            self.msg_text += f"\n{new_text}"
             self.msg_text_label.destroy()
             self.msg_text_label = tk.Label(self.master, text=self.msg_text, font=MEDIUM_FONT)
             self.msg_text_label.pack(side="top", pady=30)

@@ -19,11 +19,9 @@ class Client:
         self.client.send(self.user_name.encode())     
         isConnected = self.client.recv(1024).decode()
         print(f"Hi {self.user_name}, you connected successfully!")
-        self.thread = Thread(target=self.chekc_for_new_data)
-        self.thread.start()
-        while isConnected == "CONNECTED":
-            msg = input("")
-            self.send_msg(msg)
+        self.check_for_data_thread = Thread(target=self.check_for_new_data)
+        self.check_for_data_thread.start()
+
 
             
     def chekc_for_msg(self):
@@ -45,10 +43,6 @@ class Client:
         else:
             print("message too big, send another message")
 
-    def chekc_for_new_data(self):
-        while True:
-            data = self.client.recv(1024).decode()
-            if not data.startswith(self.trashkey):  
-                print(data)
+
 
         
