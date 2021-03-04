@@ -11,6 +11,7 @@ class Server:
         self.HOST = '127.0.0.1'
         self.PORT = 65432
         self.PASSWORD = "Tc6^g*VfWP+D{U4e"
+        self.trashkey = "sH46HJ*/-"
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((self.HOST, self.PORT))
         self.active_connections = {}
@@ -28,6 +29,7 @@ class Server:
 
     def handle_client(self, conn, addr):  
         password = conn.recv(1024).decode()
+        conn.send("PASSWORD ARRIVED".encode())
         if password == self.PASSWORD:
             conn_name = conn.recv(1024).decode()
             connected = True
@@ -40,13 +42,13 @@ class Server:
             time.sleep(1) 
             print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
             self.active_connections[conn] = conn_name
-            print(conn)
         else:
             print("[ACCESS_DENIED] incorrect password from " + str(addr))
             conn.send("INCORRECT PASSWORD, please don't hack.".encode())
             connected = False        
         while connected:           
             msg_length = conn.recv(64).decode()
+            conn.send((self.trashkey + "trash").encode())
             conn.send("LEN_RECV".encode())
             if msg_length:
                 msg_length = int(msg_length)
@@ -66,8 +68,8 @@ class Server:
         if sender is not None:
             for client in self.active_connections.keys():
                 if sender != client:
-                    client.send(self.active_connections[sender].encode())
-                    client.send(msg.encode())
+                    print(self.active_connections[sender])  
+                    client.send((f"{self.active_connections[sender]}:  {msg}").encode())
 
 
 

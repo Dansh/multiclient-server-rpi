@@ -1,11 +1,14 @@
 import tkinter as tk
+from threading import Thread
+from s_client import Client
 
 BIG_FONT = ("Verdana", 46)
 BIG_MEDIUM_FONT = ("Verdana", 37)
 MEDIUM_FONT = ("Verdana", 28)
 
-class ChatUI:
+class ChatUI(Client):
     def __init__(self, master):
+        Client.__init__(self)
         self.master = master
         master.title("A simple GUI")
         self.master.geometry("550x450")
@@ -18,15 +21,18 @@ class ChatUI:
         self.name_title.pack(side="top", pady=30)
         self.name_input = tk.Entry(self.master, font=BIG_FONT, width=10)
         self.name_input.pack(side="top", pady=20)
-        self.enter_name_button = tk.Button(self.master, text="CHAT!", font=BIG_FONT, command=self.init_chat_elements)
+        self.enter_name_button = tk.Button(self.master, text="CHAT!", font=BIG_FONT, command=self.change_user_name)
         self.enter_name_button.pack(side="top", pady=30)
         self.current_items = [self.name_title, self.name_input, self.enter_name_button]
 
     
-          
+    def change_user_name(self):
+        self.user_name = self.name_input.get()
+        self.run(self.user_name)
+        #ui_thread = Thread(target=self.init_chat_elements)
+        #ui.start(self)
 
     def init_chat_elements(self):
-        self.user_name = self.name_input.get()
         self.master.geometry("550x850")
         for item in self.current_items:
             item.destroy()
@@ -55,3 +61,6 @@ class ChatUI:
 
             
 
+root = tk.Tk()       
+client = ChatUI(root)
+root.mainloop()  

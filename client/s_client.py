@@ -1,7 +1,6 @@
 import socket
 import tkinter as tk
 from threading import Thread
-from ui_client import ChatUI
 
 class Client:
     def __init__(self):
@@ -10,35 +9,27 @@ class Client:
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect((self.HOST, self.PORT))
         self.PASSWORD = "Tc6^g*VfWP+D{U4e"
-        self.name = ""
-        root = tk.Tk()
-        self.chat = ChatUI(root)
-        root.mainloop()   
-        self.run()
+        self.trashkey = "sH46HJ*/-"
+        self.user_name = ""
 
-    def run(self):
+
+    def run(self, name):
         self.client.send(self.PASSWORD.encode())
-        while self.name == "":
-            print("here-1")
-            self.name = self.chat.user_name
-        print("here")
-        self.client.send(self.name.encode())     
+        self.client.recv(1024).decode()
+        self.client.send(self.user_name.encode())     
         isConnected = self.client.recv(1024).decode()
-        print(f"Hi {self.name}, you connected successfully!")
-        #thread = Thread(target=self.chekc_for_msg)
-        #thread.start()
+        print(f"Hi {self.user_name}, you connected successfully!")
+        self.thread = Thread(target=self.chekc_for_new_data)
+        self.thread.start()
         while isConnected == "CONNECTED":
             msg = input("")
             self.send_msg(msg)
 
-      
-            
             
     def chekc_for_msg(self):
         name = self.client.recv(1024).decode()
         msg = self.client.recv(1024).decode()
         print(f"{name}: {msg}")
-
 
 
     def send_msg(self ,msg):
@@ -54,9 +45,10 @@ class Client:
         else:
             print("message too big, send another message")
 
+    def chekc_for_new_data(self):
+        while True:
+            data = self.client.recv(1024).decode()
+            if not data.startswith(self.trashkey):  
+                print(data)
+
         
-            
-
-
-client = Client()
-
