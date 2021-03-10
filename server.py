@@ -5,10 +5,11 @@ import threading
 import time
 
 
-
+x = socket.gethostname()
+print(socket.gethostbyname(x))
 class Server:
     def __init__(self):
-        self.HOST = '127.0.0.1'
+        self.HOST = '10.100.102.32'
         self.PORT = 65432
         self.PASSWORD = "Tc6^g*VfWP+D{U4e"
         self.trashkey = "sH46HJ*/-"
@@ -73,5 +74,5 @@ class Server:
 
 
 
-server = Server()
+#server = Server()
 

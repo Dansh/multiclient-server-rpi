@@ -14,6 +14,7 @@ class ChatUI(Client):
         self.master.geometry("550x450")
         self.msg_text = ""
         self.user_name = ""
+        self.text_sen = 0
         self.init_get_name_elements()
 
     def init_get_name_elements(self):
@@ -61,6 +62,7 @@ class ChatUI(Client):
             self.input_box.delete(0, 'end')
         if new_text != "":
             self.msg_text += f"\n{new_text}"
+            self.text_sen += 1
             self.msg_text_label.destroy()
             self.msg_text_label = tk.Label(self.master, text=self.msg_text, font=MEDIUM_FONT)
             self.msg_text_label.pack(side="top", pady=30)
